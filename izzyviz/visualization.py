@@ -1781,7 +1781,6 @@ def compare_two_attentions_with_circles(
         ax=ax,
         cmap=cmap,
         norm=norm,
-        gamma=gamma,
         vmax=vmax,
         vmin=vmin,
     )
@@ -2951,7 +2950,6 @@ def visualize_attention_evolution_sparklines(
         vmin=min_val,
         vmax=max_val,
         norm=norm,
-        gamma=gamma,
     )
 
     # Get cell centers directly from plotter
@@ -3523,7 +3521,6 @@ def visualize_attention_with_detected_regions(
         ax=ax,
         cmap=cmap,
         norm=norm,
-        gamma=gamma,
         vmax=vmax,
         vmin=vmin,
     )
