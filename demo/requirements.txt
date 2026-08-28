@@ -1,0 +1,11 @@
+# IzzyViz from the maintenance branch, not WING-NUS main.
+#
+# Three of the four views in this Space (detected regions, comparison,
+# stability) raise TypeError on WING-NUS main -- see the gamma fix in
+# commit 7643ffb. Repoint this once the branch is merged:
+#     git+https://github.com/WING-NUS/IzzyViz.git
+git+https://github.com/chengxuphd/IzzyViz.git@maintenance-pass
+
+transformers>=4.0.0
+torch
+gradio>=4.0.0
