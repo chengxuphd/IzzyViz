@@ -24,57 +24,6 @@ def submatrix_sum(P, r1, c1, r2, c2):
             - P[r1][c2+1]
             + P[r1][c1])
 
-def find_locally_maximal_rectangles(M):
-    N = len(M)
-    P = build_prefix_sum(M)
-
-    left_top_cells = []
-    right_bottom_cells = []
-
-    for r1 in range(N):
-        for c1 in range(N):
-            for r2 in range(r1, N):
-                for c2 in range(c1, N):
-                    # 1) Compute sum and ratio
-                    rect_sum = submatrix_sum(P, r1, c1, r2, c2)
-                    area = (r2 - r1 + 1) * (c2 - c1 + 1)
-                    ratio_current = rect_sum / area
-
-                    # 2) Check expansions
-                    if not is_locally_maximal(M, P, r1, c1, r2, c2, ratio_current):
-                        continue  # skip if expansion check fails
-
-                    # 3) If locally maximal, store corners
-                    left_top_cells.append((r1, c1))
-                    right_bottom_cells.append((r2, c2))
-
-    return left_top_cells, right_bottom_cells
-
-def is_locally_maximal(M, P, r1, c1, r2, c2, ratio_current):
-    N = len(M)
-    # Up expansion (if r1 > 0)
-    if r1 > 0:
-        ratio_up = compute_ratio(P, r1 - 1, c1, r2, c2)
-        if ratio_up >= ratio_current:
-            return False
-    # Down expansion (if r2 < N-1)
-    if r2 < N - 1:
-        ratio_down = compute_ratio(P, r1, c1, r2 + 1, c2)
-        if ratio_down >= ratio_current:
-            return False
-    # Left expansion (if c1 > 0)
-    if c1 > 0:
-        ratio_left = compute_ratio(P, r1, c1 - 1, r2, c2)
-        if ratio_left >= ratio_current:
-            return False
-    # Right expansion (if c2 < N-1)
-    if c2 < N - 1:
-        ratio_right = compute_ratio(P, r1, c1, r2, c2 + 1)
-        if ratio_right >= ratio_current:
-            return False
-
-    return True
-
 def compute_ratio(P, r1, c1, r2, c2):
     s = submatrix_sum(P, r1, c1, r2, c2)
     area = (r2 - r1 + 1) * (c2 - c1 + 1)
