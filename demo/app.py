@@ -16,7 +16,9 @@ import torch
 
 matplotlib.use("Agg")
 
-from izzyviz import (  # noqa: E402
+# Imported after matplotlib.use() on purpose: the backend must be selected
+# before izzyviz pulls in pyplot, or the Space tries to open a display.
+from izzyviz import (
     check_stability_heatmap_with_gradient_color,
     compare_two_attentions_with_circles,
     visualize_attention_matrix,
@@ -119,9 +121,17 @@ head, and choose a view. Output is a publication-quality PDF.
     )
     with gr.Row():
         with gr.Column(scale=2):
-            text = gr.Textbox(label="Sentence", value="The cat sat on the mat because it was tired.")
+            text = gr.Textbox(
+                label="Sentence",
+                value="The cat sat on the mat because it was tired.",
+            )
             view = gr.Radio(
-                ["Attention matrix", "Detected regions", "Compare two sentences", "Stability across runs"],
+                [
+                    "Attention matrix",
+                    "Detected regions",
+                    "Compare two sentences",
+                    "Stability across runs",
+                ],
                 value="Attention matrix", label="View",
             )
             contrast = gr.Textbox(

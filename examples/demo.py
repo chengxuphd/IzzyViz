@@ -22,7 +22,9 @@ import torch
 
 matplotlib.use("Agg")
 
-from izzyviz import (  # noqa: E402  (import after backend selection)
+# Imported after matplotlib.use() on purpose: the backend must be selected
+# before izzyviz pulls in pyplot, or a headless run tries to open a display.
+from izzyviz import (
     check_stability_heatmap_with_gradient_color,
     compare_two_attentions_with_circles,
     visualize_attention_evolution_sparklines,
@@ -70,6 +72,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out-dir", type=pathlib.Path, default=pathlib.Path("demo_output"))
     parser.add_argument("--model", default=MODEL)
+    parser.add_argument("--layer", type=int, default=LAYER)
+    parser.add_argument("--head", type=int, default=HEAD)
     args = parser.parse_args()
     args.out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -81,16 +85,25 @@ def main():
     model.eval()
 
     attentions, tokens = attention_for(model, tokenizer, SENTENCE)
-    print(f"  {len(attentions)} layers x {attentions[0].shape[1]} heads, "
+    n_layers, n_heads = len(attentions), attentions[0].shape[1]
+    print(f"  {n_layers} layers x {n_heads} heads, "
           f"{len(tokens)} tokens: {' '.join(tokens)}")
 
-    head = attentions[LAYER][0, HEAD]
+    # Clamp rather than crash: --model accepts any HF encoder, and the
+    # defaults are sized for DistilBERT (6 layers, 12 heads).
+    layer_idx = min(args.layer, n_layers - 1)
+    head_idx = min(args.head, n_heads - 1)
+    if (layer_idx, head_idx) != (args.layer, args.head):
+        print(f"  requested layer {args.layer}/head {args.head} is out of range "
+              f"for this model; using layer {layer_idx}/head {head_idx}")
+
+    head = attentions[layer_idx][0, head_idx]
     outputs = {}
 
     # 1. The basic view: one layer, one head.
     path = args.out_dir / "1_attention_matrix.pdf"
     visualize_attention_matrix(head, x_labels=tokens, y_labels=tokens,
-                               title=f"layer {LAYER}, head {HEAD}", save_path=str(path))
+                               title=f"layer {layer_idx}, head {head_idx}", save_path=str(path))
     outputs["attention matrix"] = path
 
     # 2. Region detection: where is this head actually looking?
@@ -104,7 +117,7 @@ def main():
     if len(contrast_tokens) == len(tokens):
         path = args.out_dir / "3_comparison.pdf"
         compare_two_attentions_with_circles(
-            head, contrast_attn[LAYER][0, HEAD], tokens=tokens, save_path=str(path))
+            head, contrast_attn[layer_idx][0, head_idx], tokens=tokens, save_path=str(path))
         outputs["comparison"] = path
 
     # 4-5. Stability and evolution need repeated observations; see the

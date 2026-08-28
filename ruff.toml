@@ -1,0 +1,22 @@
+# Ruff configuration.
+#
+# Deliberately narrow for now: the pre-existing code in izzyviz/ has findings
+# that are out of scope for the maintenance pass, so CI runs ruff with
+# --exit-zero. This config defines what "clean" means so the gate can be made
+# blocking later without renegotiating the rules.
+line-length = 100
+
+[lint]
+# E402 (import not at top of file) is enabled on purpose: matplotlib.use()
+# must run before izzyviz is imported, so the demos need a documented
+# exemption rather than a silent one.
+select = ["E", "F", "W", "I", "UP", "B", "RUF"]
+# B905 wants zip(..., strict=), which is Python 3.10+. setup.py declares
+# python_requires>=3.9 and CI tests 3.9, so this must stay disabled until
+# the floor moves.
+ignore = ["B905"]
+
+[lint.per-file-ignores]
+# Test classes hold matrix literals as shared fixtures; RUF012 would demand
+# ClassVar annotations that add noise without adding safety here.
+"tests/*" = ["RUF012"]

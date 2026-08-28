@@ -8,7 +8,6 @@ Rendering correctness is not covered; see tests/README.md.
 """
 import os
 
-import numpy as np
 import pytest
 import torch
 
