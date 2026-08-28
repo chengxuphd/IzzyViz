@@ -8,23 +8,40 @@ setup(
     long_description_content_type='text/markdown',
     author='Luo Xizi',
     author_email='e0909010@u.nus.edu',
-    url='https://github.com/lxz333/IzzyViz',  
+    url='https://github.com/WING-NUS/IzzyViz',  
     packages=find_packages(),
+    # Runtime dependencies: only what izzyviz/ actually imports.
+    # transformers and pybind11 were previously listed here but are never
+    # imported by the library -- they are needed only to run the examples,
+    # so they now live in the 'examples' extra.
     install_requires=[
-        'matplotlib>=3.0.0',
-        'numpy>=1.15.0,<2.0.0',  # Limit NumPy version to avoid issues with NumPy 2.1+
-        'torch>=1.0.0',
-        'transformers>=4.0.0',
+        'matplotlib>=3.5.0',
+        # The <2.0.0 upper bound is retained deliberately, not by inertia.
+        # The library imports and renders correctly under numpy 2.2.6, but
+        # visualization.py:2256 calls np.array() on a torch tensor and emits
+        # a numpy-2 DeprecationWarning ("__array__ implementation doesn't
+        # accept a copy keyword"), which becomes an error in a future numpy.
+        # Fix that call site first, then relax this bound with test evidence
+        # across both numpy majors. See AUDIT.md R5.
+        'numpy>=1.21.0,<2.0.0',
+        'torch>=1.10.0',
         'pandas>=1.4.0',
-        'pybind11>=2.12'  # Add pybind11 if compilation might be needed for compatibility
     ],
+    extras_require={
+        # Needed to reproduce the README examples, which load real models.
+        'examples': ['transformers>=4.0.0'],
+        'dev': ['pytest>=7.0', 'ruff>=0.4'],
+    },
     classifiers=[
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
         'License :: OSI Approved :: MIT License', 
         'Operating System :: OS Independent',
         'Intended Audience :: Developers',
         'Topic :: Scientific/Engineering :: Visualization',
     ],
-    python_requires='>=3.6',
+    python_requires='>=3.9',
     license='MIT', 
 )

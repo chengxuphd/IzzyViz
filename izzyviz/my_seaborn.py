@@ -1,3 +1,37 @@
+"""Vendored, modified subset of seaborn's heatmap machinery.
+
+DERIVATIVE WORK. Adapted from seaborn 0.13.x (`seaborn/matrix.py`,
+`seaborn/utils.py`, `seaborn/_compat.py`), which is distributed under the
+BSD 3-Clause License. The full upstream licence and copyright notice are in
+the NOTICE file at the repository root. seaborn: https://github.com/mwaskom/seaborn
+
+IzzyViz itself is MIT-licensed; this module is a BSD-3-Clause derivative.
+
+WHY THIS IS VENDORED RATHER THAN IMPORTED
+-----------------------------------------
+This is not a copy of seaborn -- it is a fork with added behaviour that
+upstream does not provide, so `import seaborn` cannot replace it:
+
+  * `column_widths` / `row_heights` parameters on `heatmap()` and
+    `_HeatMapper`, implementing the variable-cell-size ("table lens") effect
+    that IzzyViz is built around. seaborn's heatmap draws uniform cells only.
+  * an explicit `norm` parameter, so callers can supply their own
+    normalisation (IzzyViz passes a `PowerNorm`).
+  * `heatmap()` returns `(ax, plotter)` rather than seaborn's `ax`, because
+    callers need the plotter's computed cell geometry (`row_centers`,
+    `col_centers`) to overlay circles, sparklines and region boxes.
+
+Do not "simplify" this module by depending on seaborn: `visualization.py`
+unpacks two return values and passes the three extra keyword arguments, so
+the substitution fails immediately and silently removes the library's
+central feature.
+
+MAINTENANCE NOTE
+----------------
+Because this is a fork, it does not receive upstream fixes. When updating,
+diff against the corresponding seaborn release rather than overwriting.
+"""
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
