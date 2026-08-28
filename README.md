@@ -62,13 +62,27 @@
 
 ## Installation
 
-You can install **IzzyViz** via `pip`:
+**IzzyViz is not on PyPI.** Install it from source:
+
+```bash
+pip install git+https://github.com/WING-NUS/IzzyViz.git
+```
+
+Or clone first if you intend to modify it:
 
 ```bash
 git clone https://github.com/WING-NUS/IzzyViz.git
 cd IzzyViz
-pip install .
+pip install -e ".[dev]"   # add [examples] for the transformers-based examples
 ```
+
+### Running the tests
+
+```bash
+pytest tests/
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup.
 
 ## Dependencies
 
@@ -78,11 +92,19 @@ pip install .
 - `matplotlib>=3.0.0`
 - `numpy>=1.15.0,<2.0.0`
 - `torch>=1.0.0`
-- `transformers>=4.0.0`
 - `pandas>=1.4.0`
-- `pybind11>=2.12`
 
-These dependencies will be installed automatically when you install **IzzyViz** via `pip`.
+These are installed automatically. `transformers` is **not** a runtime
+dependency of the library -- it is needed only to run the examples that load a
+real model, and is available as the `examples` extra:
+
+```bash
+pip install "izzyviz[examples] @ git+https://github.com/WING-NUS/IzzyViz.git"
+```
+
+> **Note on `numpy<2`.** The upper bound guards a numpy-2 deprecation at
+> `visualization.py:2256`. The library otherwise renders correctly under
+> numpy 2.x.
 
 ## Quick Start
 
@@ -253,11 +275,15 @@ compare_two_attentions_with_circles(
 
 **Example**:
 
+> **Sample data.** This example needs `attention_matrices_5_runs_test_sample.npy`.
+> Generate it with `python examples/generate_sample_data.py`, or substitute your
+> own capture of shape `(runs, layers, heads, seq_len, seq_len)`.
+
 ```python
 from izzyviz import check_stability_heatmap_with_gradient_color
 import numpy as np
 
-# Load previously saved attention matrices from five training runs
+# Attention from five training runs; see examples/generate_sample_data.py
 attn_array = np.load("attention_matrices_5_runs_test_sample.npy")
 
 # Specify layer and head index
@@ -288,11 +314,15 @@ check_stability_heatmap_with_gradient_color(
 
 **Example**:
 
+> **Sample data.** This example needs `attention_matrices_epochs.npy`.
+> Generate it with `python examples/generate_sample_data.py`, or substitute your
+> own capture of shape `(epochs, layers, heads, seq_len, seq_len)`.
+
 ```python
 from izzyviz import visualize_attention_evolution_sparklines
 import numpy as np
 
-# Load previously saved attention matrices from 5 training epochs
+# Attention across 5 training epochs; see examples/generate_sample_data.py
 attention_matrices = np.load("attention_matrices_epochs.npy")  # shape: (5, 12, 12, 64, 64)
 
 # Extract attention matrices across epochs
