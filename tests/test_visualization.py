@@ -26,7 +26,7 @@ def assert_is_pdf(path):
 
 
 class TestPublicApi:
-    """The exported surface is inconsistent -- see AUDIT.md M8.
+    """The exported surface is inconsistent -- see the maintenance report, finding M8.
 
     The same concepts carry different names across entry points:
     labels are x_labels/y_labels, source_tokens/target_tokens, or tokens;

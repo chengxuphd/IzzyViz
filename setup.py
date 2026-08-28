@@ -22,7 +22,7 @@ setup(
         # a numpy-2 DeprecationWarning ("__array__ implementation doesn't
         # accept a copy keyword"), which becomes an error in a future numpy.
         # Fix that call site first, then relax this bound with test evidence
-        # across both numpy majors. See AUDIT.md R5.
+        # across both numpy majors. See the maintenance report, finding R5.
         'numpy>=1.21.0,<2.0.0',
         'torch>=1.10.0',
         'pandas>=1.4.0',
