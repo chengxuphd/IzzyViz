@@ -39,6 +39,17 @@ can be skipped.
 If you add a public function, add it to `izzyviz/__init__.__all__` and give
 it at least one integration test — `TestPublicApi` will otherwise not see it.
 
+## Demos
+
+`examples/demo.py` runs DistilBERT and renders every exported view from real
+attention. It uses the public API only, so it doubles as an executable check
+of the exported surface against genuine model output rather than the synthetic
+matrices the test suite uses. Run it after any change to a visualisation
+function.
+
+`demo/app.py` is the Gradio version, deployable as a Hugging Face Space; see
+`demo/README.md`.
+
 ## Notes for maintainers
 
 - `izzyviz/my_seaborn.py` is a **BSD-3-Clause derivative of seaborn**, not

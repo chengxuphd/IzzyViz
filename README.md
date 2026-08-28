@@ -76,6 +76,21 @@ cd IzzyViz
 pip install -e ".[dev]"   # add [examples] for the transformers-based examples
 ```
 
+### Try it
+
+```bash
+pip install -e ".[examples]"
+python examples/demo.py --out-dir demo_output   # every view, real DistilBERT attention
+```
+
+An interactive version (Gradio, deployable as a Hugging Face Space) is in
+[`demo/`](demo/):
+
+```bash
+pip install -e ".[examples]" gradio
+python demo/app.py
+```
+
 ### Running the tests
 
 ```bash
