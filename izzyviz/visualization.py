@@ -22,7 +22,7 @@ THEME_NEGATIVE = "#6A0DAD"
 def bold_special_tokens(label):
     special_tokens = ["[CLS]", "[SEP]", "[PAD]"]
     if label in special_tokens:
-        return f"$\mathbf{{{label}}}$"  # Make it bold using LaTeX math formatting
+        return rf"$\mathbf{{{label}}}$"  # Make it bold using LaTeX math formatting
     return label
 
 

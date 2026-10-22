@@ -55,6 +55,14 @@ class TestPublicApi:
         assert not untested, f"exported but never called by a test: {untested}"
 
 
+class TestBoldSpecialTokens:
+    def test_special_tokens_become_bold_mathtext(self):
+        assert viz.bold_special_tokens("[CLS]") == r"$\mathbf{[CLS]}$"
+
+    def test_ordinary_tokens_are_unchanged(self):
+        assert viz.bold_special_tokens("cat") == "cat"
+
+
 class TestVisualizeAttentionMatrix:
     def test_writes_a_pdf(self, attention, tokens, tmp_path):
         out = tmp_path / "matrix.pdf"
