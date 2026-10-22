@@ -111,11 +111,16 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup.
 
 These are installed automatically. `transformers` is **not** a runtime
 dependency of the library -- it is needed only to run the examples that load a
-real model, and is available as the `examples` extra:
+real model, and is available as the `examples` extra (`transformers>=4.36`):
 
 ```bash
 pip install "izzyviz[examples] @ git+https://github.com/WING-NUS/IzzyViz.git"
 ```
+
+> **Load models with `attn_implementation="eager"`**, as every example below
+> does. Since transformers 5 the default attention implementation (SDPA) does
+> not return attention weights, so `output_attentions=True` yields nothing to
+> plot.
 
 > **Note on `numpy<2`.** The upper bound guards a numpy-2 deprecation in
 > `check_stability_heatmap_with_gradient_color`, where `np.array()` is called on
@@ -133,7 +138,7 @@ from izzyviz import visualize_attention_self_attention
 
 # Load model and tokenizer
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-model = BertModel.from_pretrained('bert-base-uncased')
+model = BertModel.from_pretrained('bert-base-uncased', attn_implementation="eager")
 
 # Single sentence input
 sentence = "The quick brown fox jumps over the lazy dog."
@@ -182,7 +187,7 @@ from izzyviz.visualization import visualize_attention_self_attention
 # Example usage
 # Load the model and tokenizer
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-model = BertModel.from_pretrained('bert-base-uncased')
+model = BertModel.from_pretrained('bert-base-uncased', attn_implementation="eager")
 
 # Prepare example input
 sentence_A = "Where is the Eiffel Tower?"  # Question
@@ -224,7 +229,9 @@ from izzyviz import visualize_attention_encoder_decoder
 from transformers import AutoTokenizer, AutoModel
 
 tokenizer = AutoTokenizer.from_pretrained("Helsinki-NLP/opus-mt-en-de")
-model = AutoModel.from_pretrained("Helsinki-NLP/opus-mt-en-de", output_attentions=True)
+model = AutoModel.from_pretrained(
+    "Helsinki-NLP/opus-mt-en-de", output_attentions=True, attn_implementation="eager"
+)
 encoder_input_ids = tokenizer("The environmental scientists have discovered that climate change is affecting biodiversity in remote mountain regions.", return_tensors="pt", add_special_tokens=True).input_ids
 with tokenizer.as_target_tokenizer():
     decoder_input_ids = tokenizer("Die Umweltwissenschaftler haben entdeckt, dass der Klimawandel die Artenvielfalt in abgelegenen Bergregionen beeinflusst.", return_tensors="pt", add_special_tokens=True).input_ids
@@ -257,7 +264,7 @@ from transformers import BertTokenizer, BertModel
 from izzyviz.visualization import compare_two_attentions_with_circles
 
 tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
-model = BertModel.from_pretrained("bert-base-uncased")
+model = BertModel.from_pretrained("bert-base-uncased", attn_implementation="eager")
 
 text = "This is an example sentence for comparing two attention heads in BERT."
 inputs = tokenizer(text, return_tensors='pt')
@@ -368,7 +375,7 @@ import torch
 
 # Load model and tokenizer
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-model = BertModel.from_pretrained('bert-base-uncased')
+model = BertModel.from_pretrained('bert-base-uncased', attn_implementation="eager")
 
 # Single sentence input
 sentence = "The quick brown fox jumps over the lazy dog while a cat watches from behind the tree."

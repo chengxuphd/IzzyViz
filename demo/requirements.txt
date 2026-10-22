@@ -5,6 +5,6 @@
 #     git+https://github.com/WING-NUS/IzzyViz.git
 git+https://github.com/chengxuphd/IzzyViz.git@maintenance-pass
 
-transformers>=4.0.0
+transformers>=4.36   # attn_implementation="eager" (see app.py)
 torch
 gradio>=4.0.0

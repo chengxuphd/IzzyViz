@@ -29,7 +29,10 @@ setup(
     ],
     extras_require={
         # Needed to reproduce the README examples, which load real models.
-        'examples': ['transformers>=4.0.0'],
+        # >=4.36 for from_pretrained(attn_implementation="eager"), which the
+        # examples need: SDPA, the default since transformers 5, returns no
+        # attention weights.
+        'examples': ['transformers>=4.36'],
         'dev': ['pytest>=7.0', 'ruff>=0.4'],
     },
     classifiers=[
