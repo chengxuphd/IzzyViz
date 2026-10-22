@@ -19,8 +19,8 @@ pip install -e ".[dev]"
 ## Running the tests
 
 ```bash
-pytest tests/          # all 38
-pytest tests/test_utility.py    # geometry only; needs no torch or matplotlib
+pytest tests/                   # the whole suite
+pytest tests/test_utility.py    # geometry layer only
 ```
 
 `tests/conftest.py` forces the matplotlib `Agg` backend, so the suite runs
@@ -36,13 +36,14 @@ assert what the picture looks like: pixel comparisons are fragile across
 matplotlib and font versions. If you add a golden-image test, mark it so it
 can be skipped.
 
-If you add a public function, add it to `izzyviz/__init__.__all__` and give
-it at least one integration test — `TestPublicApi` will otherwise not see it.
+If you add a public function, add it to `izzyviz/__init__.__all__` and call
+it from at least one test in `tests/test_visualization.py`.
+`TestPublicApi.test_every_export_is_called_by_a_test` fails if you do not.
 
 ## Demos
 
-`examples/demo.py` runs DistilBERT and renders every exported view from real
-attention. It uses the public API only, so it doubles as an executable check
+`examples/demo.py` runs DistilBERT and renders five views from real attention:
+the plain matrix, comparison, stability, evolution and detected regions. It uses the public API only, so it doubles as an executable check
 of the exported surface against genuine model output rather than the synthetic
 matrices the test suite uses. Run it after any change to a visualisation
 function.
@@ -56,6 +57,9 @@ function.
   original code, and not a drop-in for `import seaborn`. Read its module
   header before changing it. IzzyViz itself is MIT; see `NOTICE`.
 - Several functions default `save_path` to a bare filename, so calling them
-  writes a PDF into the current working directory. Pass an explicit path.
-- The `numpy<2.0.0` pin in `setup.py` guards a real numpy-2 deprecation at
-  `visualization.py:2256`. Fix that call site before relaxing it.
+  without one writes a PDF into the current working directory. Pass an
+  explicit path. (`visualize_attention_encoder_decoder` used to ignore an
+  explicit path too; that is fixed and covered by `TestEncoderDecoder`.)
+- The `numpy<2.0.0` pin in `setup.py` guards a real numpy-2 deprecation in
+  `check_stability_heatmap_with_gradient_color` (`np.array()` over a list of
+  torch tensors). Fix that call site before relaxing it.

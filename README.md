@@ -103,10 +103,10 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup.
 
 **IzzyViz** requires the following packages:
 
-- Python 3.6 or higher
-- `matplotlib>=3.0.0`
-- `numpy>=1.15.0,<2.0.0`
-- `torch>=1.0.0`
+- Python 3.9 or higher
+- `matplotlib>=3.5.0`
+- `numpy>=1.21.0,<2.0.0`
+- `torch>=1.10.0`
 - `pandas>=1.4.0`
 
 These are installed automatically. `transformers` is **not** a runtime
@@ -117,8 +117,9 @@ real model, and is available as the `examples` extra:
 pip install "izzyviz[examples] @ git+https://github.com/WING-NUS/IzzyViz.git"
 ```
 
-> **Note on `numpy<2`.** The upper bound guards a numpy-2 deprecation at
-> `visualization.py:2256`. The library otherwise renders correctly under
+> **Note on `numpy<2`.** The upper bound guards a numpy-2 deprecation in
+> `check_stability_heatmap_with_gradient_color`, where `np.array()` is called on
+> a list of torch tensors. The library otherwise renders correctly under
 > numpy 2.x.
 
 ## Quick Start

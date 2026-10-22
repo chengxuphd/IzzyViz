@@ -1,8 +1,9 @@
 """Unit tests for izzyviz.utility.
 
-utility.py has no imports at all, so these run without torch, matplotlib or
-any model. They cover the geometry layer the region-detection features are
-built on.
+utility.py itself has no imports: it is pure Python over nested lists, so
+these tests need no model and no rendering. (Importing it still goes through
+izzyviz/__init__.py, which loads torch and matplotlib.) They cover the
+geometry layer the region-detection features are built on.
 """
 import pytest
 

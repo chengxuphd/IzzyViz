@@ -18,8 +18,8 @@ setup(
         'matplotlib>=3.5.0',
         # The <2.0.0 upper bound is retained deliberately, not by inertia.
         # The library imports and renders correctly under numpy 2.2.6, but
-        # visualization.py:2256 calls np.array() on a torch tensor and emits
-        # a numpy-2 DeprecationWarning ("__array__ implementation doesn't
+        # check_stability_heatmap_with_gradient_color calls np.array() on a
+        # list of torch tensors and emits a numpy-2 DeprecationWarning ("__array__ implementation doesn't
         # accept a copy keyword"), which becomes an error in a future numpy.
         # Fix that call site first, then relax this bound with test evidence
         # across both numpy majors. See the maintenance report, finding R5.

@@ -31,8 +31,8 @@ cd /tmp/space && git add -A && git commit -m "IzzyViz demo" && git push
 ```
 
 > **`requirements.txt` points at the `maintenance-pass` branch of the fork,
-> not WING-NUS.** Three of the four views raise `TypeError` on WING-NUS
-> `main`. Repoint it once the branch is merged.
+> not WING-NUS.** Two of the four views (detected regions, comparison) raise
+> `TypeError` on WING-NUS `main`. Repoint it once the branch is merged.
 
 First build takes a few minutes; DistilBERT (~250 MB) downloads on the first
 request, so the initial visualisation is slower than later ones.
