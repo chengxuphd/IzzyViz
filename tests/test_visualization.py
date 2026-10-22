@@ -13,6 +13,7 @@ import pytest
 import torch
 
 import izzyviz
+import izzyviz.visualization as viz
 
 PDF_MAGIC = b"%PDF"
 
@@ -225,3 +226,26 @@ class TestStabilityAndEvolution:
             steps, tokens=tokens, layer=0, head=0, save_path=str(out)
         )
         assert_is_pdf(str(out))
+
+    def test_evolution_sparklines_honours_gamma(self, rng, tokens, tmp_path, monkeypatch):
+        """Regression: both colour norms were hard-coded to gamma=1.5, so the
+        documented gamma parameter had no effect on the figure."""
+        created = []
+
+        class RecordingPowerNorm(viz.PowerNorm):
+            def __init__(self, gamma, *args, **kwargs):
+                created.append(gamma)
+                super().__init__(gamma, *args, **kwargs)
+
+        monkeypatch.setattr(viz, "PowerNorm", RecordingPowerNorm)
+        steps = torch.tensor(rng.random((3, 2, 2, 8, 8)), dtype=torch.float32)
+        izzyviz.visualize_attention_evolution_sparklines(
+            steps,
+            tokens=tokens,
+            layer=0,
+            head=0,
+            gamma=3.0,
+            normalize_sparklines=False,
+            save_path=str(tmp_path / "gamma.pdf"),
+        )
+        assert created and all(g == 3.0 for g in created), created

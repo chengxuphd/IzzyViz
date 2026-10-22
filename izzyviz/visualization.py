@@ -2936,7 +2936,7 @@ def visualize_attention_evolution_sparklines(
     # ax.tick_params(which="minor", size=0)
     min_val = avg_attention.min()
     max_val = avg_attention.max()
-    norm = PowerNorm(gamma=1.5, vmin=min_val, vmax=max_val)
+    norm = PowerNorm(gamma=gamma, vmin=min_val, vmax=max_val)
 
     x_labels = [bold_special_tokens(token) for token in tokens]
     y_labels = [bold_special_tokens(token) for token in tokens]
@@ -2986,7 +2986,7 @@ def visualize_attention_evolution_sparklines(
         if not normalize_sparklines:
             """Return either dark blue or white based on background intensity relative to color bar midpoint."""
             # Calculate the middle of the color range (with PowerNorm influence)
-            norm_tmp = PowerNorm(gamma=1.5, vmin=min_val, vmax=max_val)
+            norm_tmp = PowerNorm(gamma=gamma, vmin=min_val, vmax=max_val)
             middle_value = norm_tmp.inverse(0.5)
 
             # Compare the raw attention value to the middle value
