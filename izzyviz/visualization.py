@@ -1196,7 +1196,9 @@ def visualize_attention_encoder_decoder(
     - plot_title: Title for the plot.
     - left_top_cells: List of (row, col) tuples for the top-left cells of regions to highlight.
     - right_bottom_cells: List of (row, col) tuples for the bottom-right cells of regions to highlight.
-    - save_path: File path to save the generated heatmap PDF.
+    - save_path: File path to save the generated heatmap PDF. If None, a
+      use_case-specific name (e.g. "cross_attention_heatmap.pdf") is written
+      to the current working directory.
     - use_case: Type of attention to visualize. Options are 'cross_attention', 'encoder_self_attention', 'decoder_self_attention'.
     - lean_more: If True, rotate x-axis labels by 90 degrees
     """
@@ -1216,7 +1218,7 @@ def visualize_attention_encoder_decoder(
             ylabel = "Decoder Tokens"
         default_title = "Cross-Attention Heatmap (Decoder to Encoder)"
         expected_shape = (len(decoder_tokens), len(encoder_tokens))
-        save_path = "cross_attention_heatmap.pdf"
+        default_save_path = "cross_attention_heatmap.pdf"
 
     elif use_case == "encoder_self_attention":
         # Encoder Self-Attention
@@ -1228,7 +1230,7 @@ def visualize_attention_encoder_decoder(
             ylabel = "Encoder Tokens"
         default_title = "Encoder Self-Attention Heatmap"
         expected_shape = (len(encoder_tokens), len(encoder_tokens))
-        save_path = "encoder_self_attention_heatmap.pdf"
+        default_save_path = "encoder_self_attention_heatmap.pdf"
 
     elif use_case == "decoder_self_attention":
         # Decoder Self-Attention
@@ -1240,7 +1242,7 @@ def visualize_attention_encoder_decoder(
             ylabel = "Decoder Tokens"
         default_title = "Decoder Self-Attention Heatmap"
         expected_shape = (len(decoder_tokens), len(decoder_tokens))
-        save_path = "decoder_self_attention_heatmap.pdf"
+        default_save_path = "decoder_self_attention_heatmap.pdf"
     else:
         raise ValueError(
             "Invalid use_case. Choose from 'cross_attention', 'encoder_self_attention', 'decoder_self_attention'."
@@ -1295,7 +1297,7 @@ def visualize_attention_encoder_decoder(
 
     plt.tight_layout()
     if save_path is None:
-        save_path = "attention_heatmap.pdf"
+        save_path = default_save_path
     plt.savefig(save_path)
     plt.close(fig)
     print(f"Attention heatmap saved to {save_path}")

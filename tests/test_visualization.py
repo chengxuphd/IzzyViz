@@ -93,6 +93,40 @@ class TestVisualizeAttentionMatrix:
         assert_is_pdf(str(out))
 
 
+class TestEncoderDecoder:
+    DEFAULT_NAMES = {
+        "cross_attention": "cross_attention_heatmap.pdf",
+        "encoder_self_attention": "encoder_self_attention_heatmap.pdf",
+        "decoder_self_attention": "decoder_self_attention_heatmap.pdf",
+    }
+
+    @pytest.mark.parametrize("use_case", sorted(DEFAULT_NAMES))
+    def test_honours_save_path(self, attention, tokens, use_case, tmp_path, monkeypatch):
+        """Regression: each use_case used to overwrite save_path with its own
+        default filename, so the caller's path was ignored and a PDF landed in
+        the current working directory instead."""
+        monkeypatch.chdir(tmp_path)
+        out = tmp_path / "chosen" / "encdec.pdf"
+        out.parent.mkdir()
+        izzyviz.visualize_attention_encoder_decoder(
+            attention,
+            encoder_tokens=tokens,
+            decoder_tokens=tokens,
+            use_case=use_case,
+            save_path=str(out),
+        )
+        assert_is_pdf(str(out))
+        assert not (tmp_path / self.DEFAULT_NAMES[use_case]).exists()
+
+    def test_default_save_path_is_unchanged(self, attention, tokens, tmp_path, monkeypatch):
+        """Callers that never passed save_path still get the same filename."""
+        monkeypatch.chdir(tmp_path)
+        izzyviz.visualize_attention_encoder_decoder(
+            attention, encoder_tokens=tokens, decoder_tokens=tokens
+        )
+        assert_is_pdf(str(tmp_path / "cross_attention_heatmap.pdf"))
+
+
 class TestRegionDetection:
     def test_find_attention_regions_returns_rectangles(self, attention):
         regions = izzyviz.find_attention_regions_with_merging(attention.numpy())
