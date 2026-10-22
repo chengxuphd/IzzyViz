@@ -11,6 +11,7 @@ git clone https://github.com/WING-NUS/IzzyViz.git
 cd IzzyViz
 python -m venv .venv && source .venv/bin/activate
 
+python -m pip install --upgrade pip   # older pips fail on the CPU torch index
 # CPU-only torch keeps the install small; drop the index URL if you want CUDA.
 pip install torch --index-url https://download.pytorch.org/whl/cpu
 pip install -e ".[dev]"
@@ -61,5 +62,5 @@ function.
   explicit path. (`visualize_attention_encoder_decoder` used to ignore an
   explicit path too; that is fixed and covered by `TestEncoderDecoder`.)
 - The `numpy<2.0.0` pin in `setup.py` guards a real numpy-2 deprecation in
-  `check_stability_heatmap_with_gradient_color` (`np.array()` over a list of
-  torch tensors). Fix that call site before relaxing it.
+  `check_stability_heatmap_with_gradient_color` (`np.array()` on a torch
+  tensor). Fix that call site before relaxing it.

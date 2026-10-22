@@ -124,8 +124,7 @@ pip install "izzyviz[examples] @ git+https://github.com/WING-NUS/IzzyViz.git"
 
 > **Note on `numpy<2`.** The upper bound guards a numpy-2 deprecation in
 > `check_stability_heatmap_with_gradient_color`, where `np.array()` is called on
-> a list of torch tensors. The library otherwise renders correctly under
-> numpy 2.x.
+> a torch tensor. The library otherwise renders correctly under numpy 2.x.
 
 ## Quick Start
 
@@ -399,6 +398,86 @@ visualize_attention_with_detected_regions(
 
 ## Function Reference
 
+### `visualize_attention_matrix`
+
+**Signature**:
+
+```python
+visualize_attention_matrix(
+    matrix,
+    x_labels=None,
+    y_labels=None,
+    title="Attention Heat",
+    xlabel="Tokens Attended to",
+    ylabel="Tokens Attending",
+    ax=None,
+    top_n=3,
+    enlarged_size=1.8,
+    gamma=1.5,
+    cmap="Purples",
+    left_top_cells=None,
+    right_bottom_cells=None,
+    save_path=None,
+    length_threshold=64,
+    interval=10,
+    if_interval=False,
+    if_top_cells=True,
+    show_scores_in_enlarged_cells=True,
+    background_color=True,
+    lean_more=False,
+    merge_virtual_tokens=False,
+    virtual_token_min_run=1,
+    virtual_token_label_color="#9A9A9A",
+    close_after_save=False,
+    cbar=True,
+    tight_layout=True,
+    vmin=None,
+    vmax=None,
+    norm=None
+)
+```
+
+**Description**:
+Visualizes any 2D attention-like matrix (NumPy array or PyTorch tensor) as a TableLens heatmap, enlarging the rows and columns of the top cells. With `save_path=None` nothing is written to disk. Returns `(ax, plotter)`.
+
+### `visualize_attention_overview`
+
+**Signature**:
+
+```python
+visualize_attention_overview(
+    attentions,
+    batch_index=0,
+    title="Attention Overview",
+    save_path=None,
+    figsize=None,
+    top_n=3,
+    enlarged_size=1.8,
+    gamma=1.5,
+    cmap="Purples",
+    left_top_cells=None,
+    right_bottom_cells=None,
+    length_threshold=64,
+    interval=10,
+    if_interval=False,
+    if_top_cells=True,
+    show_scores_in_enlarged_cells=True,
+    background_color=True,
+    lean_more=False,
+    merge_virtual_tokens=False,
+    virtual_token_min_run=1,
+    virtual_token_label_color="#9A9A9A",
+    cbar=False,
+    shared_color_scale=True,
+    shared_cbar=True,
+    shared_cbar_label="Attention Score",
+    close_after_save=False
+)
+```
+
+**Description**:
+Draws a grid of every layer (rows) and head (columns) using `visualize_attention_matrix` for each cell. Accepts HuggingFace-style `outputs.attentions` (a tuple of per-layer `(batch, heads, seq, seq)` tensors) or a single array of shape `(layers, batch, heads, rows, cols)`, `(layers, heads, rows, cols)` or `(heads, rows, cols)`. Returns `(fig, axes)`.
+
 ### `visualize_attention_self_attention`
 
 **Signature**:
@@ -474,7 +553,7 @@ compare_two_attentions_with_circles(
     save_path=None,
     circle_scale=1.0,
     gamma=1.5,
-    cmap="Blues",
+    cmap="Purples",
     max_circle_ratio=0.45
 )
 ```
@@ -497,7 +576,7 @@ check_stability_heatmap_with_gradient_color(
     ax=None,
     use_std_error=True,
     circle_scale=1.0,
-    cmap="Blues",
+    cmap="Purples",
     linecolor="white",
     linewidths=1.0,
     save_path="check_stability_heatmap_with_gradient_color.pdf",
@@ -562,7 +641,7 @@ visualize_attention_with_detected_regions(
     gamma=1.5,
     save_path="attention_with_detected_regions.pdf",
     ax=None,
-    cmap="Blues",
+    cmap="Purples",
     max_expansion_steps=3,
     proximity_threshold=2
 )
@@ -597,6 +676,7 @@ Contributions are welcome! If you have ideas for improvements or encounter any i
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+`izzyviz/my_seaborn.py` is derived from [seaborn](https://github.com/mwaskom/seaborn) and remains under seaborn's BSD 3-Clause License; see [NOTICE](NOTICE).
 
 ---
 
@@ -606,6 +686,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 # Changelog
 
+- **Maintenance pass (unreleased)**:
+  - Fixed three exports that raised `TypeError` on every call: `compare_two_attentions_with_circles`, `visualize_attention_evolution_sparklines` and `visualize_attention_with_detected_regions`.
+  - `visualize_attention_encoder_decoder` now honours `save_path`, and `visualize_attention_evolution_sparklines` now honours `gamma`.
+  - Added a test suite and CI, `CONTRIBUTING.md`, and `NOTICE` with the seaborn attribution.
+  - `transformers` and `pybind11` are no longer runtime dependencies.
+  - The Function Reference now covers all nine exports.
 - **Updated Function Exports**: The library now exports these specialized visualization functions:
   - `visualize_attention_self_attention`
   - `visualize_attention_encoder_decoder`
