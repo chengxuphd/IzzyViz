@@ -4,9 +4,10 @@ These drive each public function with small synthetic attention matrices
 rather than a real model, so the suite stays fast and needs no network,
 no model download, and no GPU. What is asserted is that each entry point
 runs end to end and writes a real PDF -- not that the picture is correct.
-Rendering correctness is not covered; see tests/README.md.
+Rendering correctness is not covered; see CONTRIBUTING.md.
 """
 import os
+from pathlib import Path
 
 import pytest
 import torch
@@ -42,6 +43,16 @@ class TestPublicApi:
         for name in izzyviz.__all__:
             assert callable(getattr(izzyviz, name))
 
+    def test_every_export_is_called_by_a_test(self):
+        """Guards against an exported function silently having no test.
+
+        Three of the nine exports once had none, and one of them ignored its
+        save_path argument as a result. A new export must be called here.
+        """
+        source = Path(__file__).read_text()
+        untested = [n for n in izzyviz.__all__ if f"izzyviz.{n}(" not in source]
+        assert not untested, f"exported but never called by a test: {untested}"
+
 
 class TestVisualizeAttentionMatrix:
     def test_writes_a_pdf(self, attention, tokens, tmp_path):
@@ -52,13 +63,9 @@ class TestVisualizeAttentionMatrix:
         assert_is_pdf(str(out))
 
     def test_accepts_a_numpy_array(self, rng, tokens, tmp_path):
-        matrix = rng.random((8, 8))
         out = tmp_path / "numpy.pdf"
         izzyviz.visualize_attention_matrix(
-            torch.tensor(matrix, dtype=torch.float32),
-            x_labels=tokens,
-            y_labels=tokens,
-            save_path=str(out),
+            rng.random((8, 8)), x_labels=tokens, y_labels=tokens, save_path=str(out)
         )
         assert_is_pdf(str(out))
 
@@ -91,6 +98,42 @@ class TestVisualizeAttentionMatrix:
             matrix, x_labels=tokens, y_labels=tokens, save_path=str(out)
         )
         assert_is_pdf(str(out))
+
+
+class TestOverview:
+    def test_writes_a_pdf(self, layered_attention, tmp_path):
+        out = tmp_path / "overview.pdf"
+        izzyviz.visualize_attention_overview(layered_attention, save_path=str(out))
+        assert_is_pdf(str(out))
+
+
+class TestSelfAttention:
+    def test_self_attention_mode(self, layered_attention, tokens, tmp_path):
+        out = tmp_path / "self.pdf"
+        izzyviz.visualize_attention_self_attention(
+            layered_attention, tokens, layer=1, head=1, save_path=str(out)
+        )
+        assert_is_pdf(str(out))
+
+    def test_question_context_mode(self, layered_attention, tokens, tmp_path):
+        """Splits the sequence at question_end into four sub-heatmaps."""
+        out = tmp_path / "qc.pdf"
+        izzyviz.visualize_attention_self_attention(
+            layered_attention,
+            tokens,
+            layer=0,
+            head=0,
+            mode="question_context",
+            question_end=3,
+            save_path=str(out),
+        )
+        assert_is_pdf(str(out))
+
+    def test_question_context_requires_question_end(self, layered_attention, tokens):
+        with pytest.raises(ValueError, match="question_end"):
+            izzyviz.visualize_attention_self_attention(
+                layered_attention, tokens, layer=0, head=0, mode="question_context"
+            )
 
 
 class TestEncoderDecoder:
@@ -129,8 +172,14 @@ class TestEncoderDecoder:
 
 class TestRegionDetection:
     def test_find_attention_regions_returns_rectangles(self, attention):
-        regions = izzyviz.find_attention_regions_with_merging(attention.numpy())
-        assert regions is not None
+        """Each region is an inclusive (top, left, bottom, right) inside the matrix."""
+        matrix = attention.numpy()
+        regions = izzyviz.find_attention_regions_with_merging(matrix)
+        assert isinstance(regions, list) and regions
+        rows, cols = matrix.shape
+        for top, left, bottom, right in regions:
+            assert 0 <= top <= bottom < rows
+            assert 0 <= left <= right < cols
 
     def test_visualize_with_detected_regions(self, attention, tokens, tmp_path):
         out = tmp_path / "regions.pdf"

@@ -26,5 +26,14 @@ def attention(rng):
 
 
 @pytest.fixture
+def layered_attention(rng):
+    """HuggingFace-style output: one (batch=1, heads=2, 8, 8) tensor per layer."""
+    return tuple(
+        torch.softmax(torch.tensor(rng.random((1, 2, 8, 8)), dtype=torch.float32), dim=-1)
+        for _ in range(2)
+    )
+
+
+@pytest.fixture
 def tokens():
     return [f"tok{i}" for i in range(8)]
