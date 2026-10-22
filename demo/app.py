@@ -78,13 +78,16 @@ def visualize(text, layer, head, view, contrast_text):
     layer = min(int(layer), len(attentions) - 1)
     head = min(int(head), attentions[0].shape[1] - 1)
     matrix = attentions[layer][0, head]
-    path = _tmp_pdf()
     info = f"{len(tokens)} tokens · layer {layer} · head {head}\n{' '.join(tokens)}"
 
+    # The temp file is created only once the inputs are valid, so the error
+    # paths below do not leave empty PDFs behind.
     if view == "Attention matrix":
+        path = _tmp_pdf()
         visualize_attention_matrix(matrix, x_labels=tokens, y_labels=tokens,
                                    title=f"layer {layer}, head {head}", save_path=path)
     elif view == "Detected regions":
+        path = _tmp_pdf()
         visualize_attention_with_detected_regions(
             matrix, source_tokens=tokens, target_tokens=tokens, save_path=path)
     elif view == "Compare two sentences":
@@ -94,10 +97,12 @@ def visualize(text, layer, head, view, contrast_text):
         if len(other_tokens) != len(tokens):
             return None, (f"Both sentences must tokenise to the same length "
                           f"({len(tokens)} vs {len(other_tokens)}).")
+        path = _tmp_pdf()
         compare_two_attentions_with_circles(
             matrix, other_attn[layer][0, head], tokens=tokens, save_path=path)
         info += f"\nvs: {' '.join(other_tokens)}"
     elif view == "Stability across runs":
+        path = _tmp_pdf()
         check_stability_heatmap_with_gradient_color(
             _simulate_runs(matrix), x_labels=tokens, y_labels=tokens, save_path=path)
         info += "\n(repeat runs are simulated -- see the note above)"

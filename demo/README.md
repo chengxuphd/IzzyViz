@@ -21,10 +21,10 @@ The three files in this directory are the complete Space: `app.py`, this
 `README.md` (its YAML header is the Space config), and `requirements.txt`.
 
 ```bash
-pip install huggingface_hub
-huggingface-cli login                    # needs a WRITE token
+pip install -U huggingface_hub           # provides the `hf` CLI
+hf auth login                            # needs a WRITE token
 
-huggingface-cli repo create izzyviz --type space --space_sdk gradio
+hf repo create chengxuphd/izzyviz --repo-type space --space-sdk gradio
 git clone https://huggingface.co/spaces/chengxuphd/izzyviz /tmp/space
 cp demo/{app.py,README.md,requirements.txt} /tmp/space/
 cd /tmp/space && git add -A && git commit -m "IzzyViz demo" && git push
